@@ -2,8 +2,7 @@ import { Eye, EyeOff, Languages, Lock, LogIn, User } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { LoginBackground } from '@/components/LoginBackground'
-import { LoginLogo } from '@/components/LoginLogo'
+import { LoginIllustration } from '@/components/LoginIllustration'
 import { Button } from '@/components/ui/button'
 import { DEMO_USERS } from '@/api/mock'
 import { useAuth } from '@/lib/auth'
@@ -27,14 +26,13 @@ export default function Login() {
     try { await login(u.trim(), p); nav(from, { replace: true }) } catch { setErr(true); setBusy(false) }
   }
   return (
-    // "dark" forces the dark palette: the designed background is dark in both themes.
-    <div className="dark lg-page relative flex min-h-screen items-center justify-center p-4 text-foreground">
-      <LoginBackground />
+    // "dark" forces the dark palette: the background photo is dark in both themes.
+    <div className="dark relative flex min-h-screen items-center justify-center bg-[#050b1a] bg-cover bg-right bg-no-repeat p-4 text-foreground"
+      style={{ backgroundImage: 'linear-gradient(90deg, rgba(5,11,26,.55), rgba(5,11,26,.15)), url(/padisar-bg.png)' }}>
       <Button className="absolute end-4 top-4" onClick={() => s.setLang(s.lang === 'en' ? 'fa' : 'en')}><Languages size={16} />{t('lang')}</Button>
       <div className="lg-card">
-        <div className="lg-pic"><LoginLogo /></div>
+        <div className="lg-pic"><LoginIllustration /></div>
         <form className="lg-form" onSubmit={submit} noValidate aria-labelledby="login-title">
-          <img className="lg-logo-sm" src="/padisar-logo.png" alt="Padisar Informatics" />
           <h1 id="login-title" className="lg-title">{t('loginTitle')}</h1>
           <div className="lg-field" data-invalid={bad.u || undefined} data-validate={t('usernameRequired')}>
             <input className="lg-input" name="username" aria-label={t('username')} placeholder={t('username')} autoComplete="username" autoFocus value={u}

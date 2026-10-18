@@ -234,18 +234,3 @@ describe('login form design', () => {
     expect((screen.getByLabelText('نام کاربری') as HTMLInputElement).value).toBe('viewer')
   })
 })
-
-test('login page shows the Padisar logo (beside the form on wide screens, above it on small ones)', async () => {
-  sessionStorage.clear(); mount('/login'); await screen.findByLabelText('Username')
-  const logos = screen.getAllByAltText('Padisar Informatics') as HTMLImageElement[]
-  expect(logos).toHaveLength(2)
-  expect(logos.every((i) => i.getAttribute('src') === '/padisar-logo.png')).toBe(true)
-})
-
-test('login background is drawn with CSS layers, no image file', async () => {
-  sessionStorage.clear(); mount('/login'); await screen.findByLabelText('Username')
-  const bg = document.querySelector('.lg-bg')!
-  expect(bg).toBeTruthy()
-  expect(bg.querySelectorAll('.lg-orb')).toHaveLength(3)
-  expect((document.querySelector('.lg-page') as HTMLElement).style.backgroundImage).toBe('')
-})

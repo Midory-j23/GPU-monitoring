@@ -52,7 +52,8 @@ Performance note: `.glass` is translucent only; real `backdrop-filter` blur (`.g
 side drawer and the login card, because blurring behind every box while the background moves makes pages stutter.
 
 ## Login
-`/login` has a designed CSS background (no image file; `components/LoginBackground.tsx`, styles in `pages/login.css`) and the Padisar logo (`public/padisar-logo.png`). Every other route is wrapped in `RequireAuth`. Mock mode accepts `admin / admin123`,
+`/login` uses `public/padisar-bg.png` as its background (replace the file to rebrand; a 1920×1080 image will look sharper
+than the current 600×532). Every other route is wrapped in `RequireAuth`. Mock mode accepts `admin / admin123`,
 `operator / operator123`, `viewer / viewer123` (shown as click-to-fill chips on the login page, only in mock mode).
 Real mode: `POST /api/auth/login {username,password}` must set an HTTP-only session cookie and return `{username, role}`;
 `POST /api/auth/logout` ends it; any `401` from the API signs the user out. Viewers don't see the acknowledge buttons, but

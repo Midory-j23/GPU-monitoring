@@ -16,13 +16,13 @@ index.html → src/main.tsx → Providers.tsx → App.tsx (routes) → Layout.ts
 
 ## 2. Pages (URL → file → sections)
 
-### Login — `/login` → `pages/Login.tsx` (+ `pages/login.css`, `components/LoginLogo.tsx`)
+### Login — `/login` → `pages/Login.tsx` (+ `pages/login.css`, `components/LoginIllustration.tsx`)
 Based on the "Login V1" design you supplied (two-column card: artwork + pill-shaped fields), recoloured with the project's colours.
 | Part | Where |
 |---|---|
-| Background (CSS only: navy gradient, grid, rings, 3 drifting colour glows) | `components/LoginBackground.tsx` + the "Background" section at the end of `login.css` (glow speed/colours: `.lg-orb-*`) |
+| Background photo (`public/padisar-bg.png`) | `style` of the root div in `Login.tsx` |
 | Card, fields, button, bubbles, error box (all colours = project CSS variables) | `login.css` (classes start with `lg-`) |
-| Logo (beside the form on wide screens, small above the title on mobile; tilts toward the pointer) | `components/LoginLogo.tsx`; image file `public/padisar-logo.png` (replace the file to change it); sizes in `login.css` (`.lg-logo`, `.lg-logo-sm`) |
+| Artwork (laptop + user icon, tilts toward the pointer) | `components/LoginIllustration.tsx` (SVG, uses `--primary`, `--ok`, `--muted`) |
 | Validation bubbles ("Username is required") | `data-validate` attributes + `bad` state in `Login.tsx`; texts `usernameRequired` / `passwordRequired` in the locale files |
 | Wrong-password message | `loginError` |
 | Demo accounts (mock mode only) | chips at the bottom, from `DEMO_USERS` in `api/mock.ts` |
@@ -150,7 +150,7 @@ The values live in `lib/settings.tsx` (**refreshSec**, **animBg**).
 | Change colours or glass look | `index.css` (custom parts) and **AntTheme** `token`/`components` in `Providers.tsx` (Ant Design parts) |
 | Change sidebar width/shape | the `<aside>` in `components/Layout.tsx` (`w-60`, `borderRadius: 30`); mobile drawer width in the `<Drawer>` below it |
 | Change blob speed/colours | `.blob-a/b/c` in `index.css` |
-| Change the login background | `.lg-page` / `.lg-orb-*` / `.lg-grid` in `pages/login.css` |
+| Replace login background | `public/padisar-bg.png` |
 | Change mock customers/GPUs | `api/mock.ts` |
 | Connect real backend | `.env` → `VITE_USE_MOCK=false`; endpoints are listed in `README.md` |
 | Add a role rule in the UI | `lib/auth.tsx` (`canAck`) — the real check must also be on the backend |

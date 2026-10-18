@@ -1,7 +1,8 @@
 /* Login form layout adapted from "Login V1" by Colorlib (free for personal and commercial use),
    recoloured with the project's CSS variables (index.css) and converted to logical properties so it mirrors in RTL. */
 .lg-card { width: min(960px, 100%); display: flex; align-items: center; justify-content: center; gap: 56px; padding: 48px 56px; border-radius: 24px;
-  background: hsl(var(--card) / .9); border: 1px solid hsl(var(--foreground) / .14); box-shadow: 0 24px 70px rgb(0 0 0 / .5), inset 0 1px 0 hsl(var(--foreground) / .08); }
+  background: hsl(var(--card) / .84); border: 1px solid hsl(var(--foreground) / .14); box-shadow: 0 20px 60px rgb(0 0 0 / .45);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 .lg-pic { display: none; flex: 0 0 316px; max-width: 316px; }
 @media (min-width: 992px) { .lg-pic { display: block; } }
 .lg-tilt { transition: transform .3s cubic-bezier(.03, .98, .52, .99); will-change: transform; }
@@ -36,30 +37,3 @@
 .lg-foot { margin-top: 22px; text-align: center; font-size: 13px; color: hsl(var(--muted-foreground)); }
 .lg-chip { margin: 4px 3px 0; padding: 3px 12px; border-radius: 999px; font-size: 12px; color: hsl(var(--muted-foreground)); border: 1px solid hsl(var(--border)); }
 .lg-chip:hover { color: hsl(var(--foreground)); border-color: hsl(var(--primary)); }
-
-/* Logo: the PNG is small (110px), so it is shown at about its natural size to stay sharp */
-.lg-pic-bg { display: flex; align-items: center; justify-content: center; width: 260px; height: 260px; margin: auto; border-radius: 50%;
-  background: hsl(var(--primary) / .10); box-shadow: inset 0 0 0 1px hsl(var(--primary) / .25); }
-.lg-logo { display: block; width: 128px; height: auto; }
-.lg-logo-sm { display: block; width: 72px; height: auto; margin: 0 auto 14px; }
-@media (min-width: 992px) { .lg-logo-sm { display: none; } }
-
-/* ── Background ─────────────────────────────────────────────────────────── */
-.lg-page { isolation: isolate; overflow: hidden; background: linear-gradient(135deg, #050b1a 0%, #0a1b33 48%, #062a36 100%); }
-.lg-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.lg-orb { position: absolute; border-radius: 50%; will-change: transform; }
-.lg-orb-a { width: 56vmax; height: 56vmax; left: -16vmax; top: -22vmax; background: radial-gradient(circle, rgba(76,184,224,.40), transparent 65%); animation: lg-a 22s ease-in-out infinite alternate; }
-.lg-orb-b { width: 48vmax; height: 48vmax; right: -14vmax; top: 4vmax; background: radial-gradient(circle, rgba(139,124,240,.32), transparent 65%); animation: lg-b 28s ease-in-out infinite alternate; }
-.lg-orb-c { width: 56vmax; height: 56vmax; left: 18vw; bottom: -30vmax; background: radial-gradient(circle, rgba(60,207,142,.24), transparent 65%); animation: lg-c 34s ease-in-out infinite alternate; }
-@keyframes lg-a { to { transform: translate3d(30vw, 24vh, 0); } }
-@keyframes lg-b { to { transform: translate3d(-26vw, 22vh, 0); } }
-@keyframes lg-c { to { transform: translate3d(26vw, -20vh, 0); } }
-.lg-grid { position: absolute; inset: 0; background-size: 56px 56px;
-  background-image: linear-gradient(rgba(180,215,240,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(180,215,240,.06) 1px, transparent 1px);
-  -webkit-mask-image: radial-gradient(ellipse at center, #000 25%, transparent 72%); mask-image: radial-gradient(ellipse at center, #000 25%, transparent 72%); }
-.lg-ring { position: absolute; left: 50%; top: 50%; border-radius: 50%; border: 1px solid rgba(76,184,224,.14); transform: translate(-50%, -50%); }
-.lg-ring-1 { width: 720px; height: 720px; }
-.lg-ring-2 { width: 1080px; height: 1080px; border-color: rgba(76,184,224,.08); }
-.lg-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(2,6,16,.6) 100%); }
-html[data-anim='off'] .lg-orb { animation: none; }            /* Settings → Animated background */
-@media (prefers-reduced-motion: reduce) { .lg-orb { animation: none; } }
