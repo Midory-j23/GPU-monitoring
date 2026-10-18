@@ -1,0 +1,56 @@
+@import '@fontsource/vazirmatn/400.css';
+@import '@fontsource/vazirmatn/600.css';
+@import '@fontsource/vazirmatn/700.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Minimal reset (Tailwind's preflight is off because it breaks Ant Design buttons) */
+*, ::before, ::after { box-sizing: border-box; border: 0 solid hsl(var(--border)); }
+h1, h2, h3, p, dl, dd { margin: 0; }
+button { background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; }
+table { border-collapse: collapse; }
+.ant-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+/* Mobile navigation drawer: rounded on the inner edge, like the desktop sidebar */
+.nav-drawer .ant-drawer-content { border-radius: 0 30px 30px 0; overflow: hidden; }
+[dir='rtl'] .nav-drawer .ant-drawer-content { border-radius: 30px 0 0 30px; }
+
+:root {
+  --background: 210 25% 95%; --foreground: 210 30% 14%; --card: 0 0% 100%; --border: 210 20% 80%;
+  --muted: 210 20% 90%; --muted-foreground: 210 16% 28%; --glass-a: .92; --primary: 197 75% 36%; --primary-foreground: 0 0% 100%;
+  --ok: 152 70% 28%; --warn: 36 95% 34%; --crit: 4 65% 46%; --na: 210 10% 46%;
+}
+.dark {
+  --background: 205 35% 12%; --foreground: 205 30% 92%; --card: 205 30% 18%; --border: 205 25% 30%;
+  --muted: 205 25% 22%; --muted-foreground: 205 15% 68%; --glass-a: .62; --primary: 197 70% 58%; --primary-foreground: 205 35% 10%;
+  --ok: 152 60% 52%; --warn: 42 90% 58%; --crit: 4 100% 70%; --na: 205 10% 58%;
+}
+html[lang='fa'] body { font-family: 'Vazirmatn', Tahoma, sans-serif; }
+body {
+  @apply bg-background text-foreground antialiased;
+}
+/* Translucent "glass" WITHOUT backdrop-filter: cheap, because the moving background is already soft. */
+.glass {
+  background: hsl(var(--card) / var(--glass-a));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 2px 10px rgb(20 40 70 / .10);
+}
+.dark .glass { border-color: hsl(var(--foreground) / .14); box-shadow: 0 2px 10px rgb(0 0 0 / .25); }
+/* Sticky header: near-opaque instead of blurred (blurring a moving background on every scroll frame is expensive) */
+.glass-bar { background: hsl(var(--card) / .96); }
+/* Real blur only where sharp content passes behind: sticky header, side drawer, login card. */
+.glass-blur { -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 1px; }
+
+/* Live background: three colour blobs drifting behind the panels. Movement only (compositor-friendly). */
+.blob { position: absolute; border-radius: 50%; opacity: .6; will-change: transform; }
+:root:not(.dark) .blob { opacity: .22; }
+.blob-a { width: 44vmax; height: 44vmax; left: -10vmax; top: -12vmax; background: radial-gradient(circle, rgba(76,184,224,.6), transparent 66%); animation: drift-a 20s ease-in-out infinite alternate; }
+.blob-b { width: 40vmax; height: 40vmax; right: -10vmax; top: -4vmax; background: radial-gradient(circle, rgba(139,124,240,.55), transparent 66%); animation: drift-b 26s ease-in-out infinite alternate; }
+.blob-c { width: 44vmax; height: 44vmax; left: 25vw; bottom: -20vmax; background: radial-gradient(circle, rgba(60,207,142,.45), transparent 66%); animation: drift-c 32s ease-in-out infinite alternate; }
+@keyframes drift-a { to { transform: translate3d(40vw, 30vh, 0); } }
+@keyframes drift-b { to { transform: translate3d(-38vw, 34vh, 0); } }
+@keyframes drift-c { to { transform: translate3d(-36vw, -26vh, 0); } }
+html[data-anim='off'] .blob, html[data-scrolling] .blob { animation: none; }
+@media (prefers-reduced-motion: reduce) { .blob { animation: none; } }
