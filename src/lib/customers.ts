@@ -1,4 +1,4 @@
-import type { Customer, Gpu, Status, Vgpu } from '@/api/types'
+import type { Customer, Gpu, Localized, Status, Vgpu } from '@/api/types'
 import { RANK } from './status'
 import { sum } from './utils'
 
@@ -15,3 +15,6 @@ export function customerStats(c: Customer, gpus: Gpu[], vgpus: Vgpu[]): Customer
   const status = [...g.map((x) => x.status), ...v.map((x) => x.health)].reduce<Status>((a, b) => (RANK[b] > RANK[a] ? b : a), 'ok')
   return { c, gpus: g, vgpus: v, allocGb, usedGb, util, status }
 }
+
+/** Pick the text for the selected language (falls back to the other language, then ''). */
+export const tr = (v: Localized | undefined, lang: string) => (v ? (lang === 'fa' ? v.fa || v.en : v.en || v.fa) : '')

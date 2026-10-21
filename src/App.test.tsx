@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { api } from './api/client'
 import App from './App'
+import { safeHref } from './pages/CustomerDetail'
 import { Providers } from './Providers'
 
 const mount = (path: string) => render(<Providers><MemoryRouter initialEntries={[path]}><App /></MemoryRouter></Providers>)
@@ -263,5 +264,47 @@ describe('login brand + GSAP', () => {
     expect(svg.querySelector('.lg-pulse')).toBeTruthy()
     expect(svg.querySelector('circle[r="13"]')).toBeNull()          // old user head
     expect(svg.innerHTML).not.toContain('M131 174')                  // old user shoulders
+  })
+})
+
+describe('customer details', () => {
+  test('list shows contact person, phone, city and plan; search finds a customer by phone', async () => {
+    mount('/customers'); await loaded()
+    for (const text of ['Sara Moradi', '+98 21 5555 0101', 'Tehran', 'Shiraz', 'Enterprise']) expect(document.body.textContent).toContain(text)
+    fireEvent.change(screen.getByLabelText('Search…'), { target: { value: '0303' } })
+    await waitFor(() => expect(document.querySelectorAll('.ant-table-row')).toHaveLength(1))
+    expect(document.querySelector('.ant-table-row')!.textContent).toContain('Sepehr AI Lab')
+  })
+  test('detail page shows contact, address and account details, with working links', async () => {
+    mount('/customers/c3'); await loaded()
+    await screen.findByRole('heading', { level: 1, name: 'Sepehr AI Lab' }, { timeout: 8000 })
+    for (const text of ['Contact', 'Dr. Maryam Rahimi', 'Unit 7, Science Park, Zand Blvd.', 'Shiraz', 'Fars', '7134812345', 'Iran', 'AI research', 'Enterprise', '2027-06', 'Sina Ahmadi', '315522', '411555666777', 'Long-running training jobs'])
+      expect(document.body.textContent).toContain(text)
+    expect(document.querySelector('a[href="tel:+987135550303"]')).toBeTruthy()
+    expect(document.querySelector('a[href="mailto:lab@sepehr-ai.example"]')).toBeTruthy()
+    const site = document.querySelector('a[href="https://sepehr-ai.example"]') as HTMLAnchorElement
+    expect(site.textContent).toBe('sepehr-ai.example'); expect(site.rel).toContain('noopener')
+  })
+  test('Persian detail page uses the Persian texts', async () => {
+    localStorage.setItem('lang', 'fa'); mount('/customers/c3'); await loaded()
+    await screen.findByRole('heading', { level: 1, name: 'آزمایشگاه هوش مصنوعی سپهر' }, { timeout: 8000 })
+    for (const text of ['اطلاعات تماس', 'دکتر مریم رحیمی', 'شیراز', 'فارس', 'ایران', 'سازمانی', 'پژوهش هوش مصنوعی']) expect(document.body.textContent).toContain(text)
+    expect(document.documentElement.dir).toBe('rtl')
+  })
+  test('safeHref only allows http(s) links', () => {
+    expect(safeHref('https://a.example')).toBe('https://a.example')
+    expect(safeHref('http://a.example')).toBe('http://a.example')
+    expect(safeHref('a.example')).toBe('https://a.example')
+    expect(safeHref('javascript:alert(1)')).toBeUndefined()
+    expect(safeHref('data:text/html,x')).toBeUndefined()
+  })
+  test('copy address button copies a formatted address', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    mount('/customers/c3'); await loaded()
+    fireEvent.click(await screen.findByRole('button', { name: 'Copy address' }, { timeout: 8000 }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Copied' })).toBeTruthy())
+    expect(writeText).toHaveBeenCalledWith('Unit 7, Science Park, Zand Blvd., Shiraz, Fars, 7134812345, Iran')
+    Reflect.deleteProperty(navigator, 'clipboard')
   })
 })

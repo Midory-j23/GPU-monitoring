@@ -27,11 +27,41 @@ const gpus: Gpu[] = models.map(([name, cap], i) => {
   return g
 })
 const customers: Customer[] = [
-  { id: 'c1', name: 'Arvin Analytics', nameFa: 'آروین آنالیتیکس', since: '2025-03', gpuHours: 430 },
-  { id: 'c2', name: 'Pars Render Studio', nameFa: 'پارس رندر استودیو', since: '2024-11', gpuHours: 1180 },
-  { id: 'c3', name: 'Sepehr AI Lab', nameFa: 'آزمایشگاه هوش مصنوعی سپهر', since: '2025-06', gpuHours: 1620 },
-  { id: 'c4', name: 'Kavosh Engineering', nameFa: 'مهندسی کاوش', since: '2024-08', gpuHours: 760 },
-  { id: 'c5', name: 'Dena HealthTech', nameFa: 'دنا هلث‌تک', since: '2026-01', gpuHours: 90 },
+  {
+    id: 'c1', name: 'Arvin Analytics', nameFa: 'آروین آنالیتیکس', since: '2025-03', gpuHours: 430,
+    contactName: { en: 'Sara Moradi', fa: 'سارا مرادی' }, phone: '+98 21 5555 0101', mobile: '+98 912 000 0101', email: 'info@arvin-analytics.example', website: 'https://arvin-analytics.example',
+    address: { street: { en: 'No. 12, Valiasr St., Block 3', fa: 'خیابان ولیعصر، پلاک ۱۲، بلوک ۳' }, city: { en: 'Tehran', fa: 'تهران' }, province: { en: 'Tehran', fa: 'تهران' }, country: { en: 'Iran', fa: 'ایران' }, postalCode: '1969712345' },
+    registrationNo: '412345', taxId: '411234567890', industry: { en: 'Data analytics', fa: 'تحلیل داده' }, plan: 'Business', contractEnd: '2027-03', accountManager: { en: 'Reza Karimi', fa: 'رضا کریمی' },
+    notes: { en: 'Runs nightly reporting jobs on shared vGPUs.', fa: 'گزارش\u200cهای شبانه را روی vGPUهای اشتراکی اجرا می\u200cکند.' },
+  },
+  {
+    id: 'c2', name: 'Pars Render Studio', nameFa: 'پارس رندر استودیو', since: '2024-11', gpuHours: 1180,
+    contactName: { en: 'Nima Hosseini', fa: 'نیما حسینی' }, phone: '+98 31 3555 0202', mobile: '+98 913 000 0202', email: 'studio@pars-render.example', website: 'https://pars-render.example',
+    address: { street: { en: 'No. 48, Chahar Bagh Abbasi St.', fa: 'خیابان چهارباغ عباسی، پلاک ۴۸' }, city: { en: 'Isfahan', fa: 'اصفهان' }, province: { en: 'Isfahan', fa: 'اصفهان' }, country: { en: 'Iran', fa: 'ایران' }, postalCode: '8143612345' },
+    registrationNo: '208811', taxId: '411987654321', industry: { en: '3D rendering & animation', fa: 'رندر سه\u200cبعدی و انیمیشن' }, plan: 'Enterprise', contractEnd: '2026-12', accountManager: { en: 'Reza Karimi', fa: 'رضا کریمی' },
+    notes: { en: 'Peak load before project deadlines; needs 24-hour support.', fa: 'در نزدیکی موعد پروژه\u200cها بار بالایی دارد؛ پشتیبانی ۲۴ ساعته لازم است.' },
+  },
+  {
+    id: 'c3', name: 'Sepehr AI Lab', nameFa: 'آزمایشگاه هوش مصنوعی سپهر', since: '2025-06', gpuHours: 1620,
+    contactName: { en: 'Dr. Maryam Rahimi', fa: 'دکتر مریم رحیمی' }, phone: '+98 71 3555 0303', mobile: '+98 917 000 0303', email: 'lab@sepehr-ai.example', website: 'https://sepehr-ai.example',
+    address: { street: { en: 'Unit 7, Science Park, Zand Blvd.', fa: 'بلوار زند، پارک علم و فناوری، واحد ۷' }, city: { en: 'Shiraz', fa: 'شیراز' }, province: { en: 'Fars', fa: 'فارس' }, country: { en: 'Iran', fa: 'ایران' }, postalCode: '7134812345' },
+    registrationNo: '315522', taxId: '411555666777', industry: { en: 'AI research', fa: 'پژوهش هوش مصنوعی' }, plan: 'Enterprise', contractEnd: '2027-06', accountManager: { en: 'Sina Ahmadi', fa: 'سینا احمدی' },
+    notes: { en: 'Long-running training jobs; dedicated A30 GPU.', fa: 'آموزش\u200cهای طولانی\u200cمدت؛ یک GPU اختصاصی A30.' },
+  },
+  {
+    id: 'c4', name: 'Kavosh Engineering', nameFa: 'مهندسی کاوش', since: '2024-08', gpuHours: 760,
+    contactName: { en: 'Amir Jafari', fa: 'امیر جعفری' }, phone: '+98 41 3555 0404', mobile: '+98 914 000 0404', email: 'office@kavosh-eng.example', website: 'https://kavosh-eng.example',
+    address: { street: { en: 'Tower B, Floor 5, Imam Khomeini St.', fa: 'خیابان امام خمینی، برج ب، طبقه ۵' }, city: { en: 'Tabriz', fa: 'تبریز' }, province: { en: 'East Azerbaijan', fa: 'آذربایجان شرقی' }, country: { en: 'Iran', fa: 'ایران' }, postalCode: '5157712345' },
+    registrationNo: '129034', taxId: '411222333444', industry: { en: 'Engineering & CAD', fa: 'مهندسی و طراحی صنعتی' }, plan: 'Standard', contractEnd: '2026-11', accountManager: { en: 'Sina Ahmadi', fa: 'سینا احمدی' },
+    notes: { en: 'CAD virtual desktops for 25 engineers.', fa: 'دسکتاپ\u200cهای مجازی CAD برای ۲۵ مهندس.' },
+  },
+  {
+    id: 'c5', name: 'Dena HealthTech', nameFa: 'دنا هلث\u200cتک', since: '2026-01', gpuHours: 90,
+    contactName: { en: 'Dr. Leila Najafi', fa: 'دکتر لیلا نجفی' }, phone: '+98 51 3555 0505', mobile: '+98 915 000 0505', email: 'it@dena-health.example', website: 'https://dena-health.example',
+    address: { street: { en: 'Medical Tech Hub, Vakilabad Blvd.', fa: 'بلوار وکیل\u200cآباد، مرکز فناوری پزشکی' }, city: { en: 'Mashhad', fa: 'مشهد' }, province: { en: 'Razavi Khorasan', fa: 'خراسان رضوی' }, country: { en: 'Iran', fa: 'ایران' }, postalCode: '9185712345' },
+    registrationNo: '502177', taxId: '411777888999', industry: { en: 'Healthcare AI', fa: 'هوش مصنوعی سلامت' }, plan: 'Trial', contractEnd: '2026-12', accountManager: { en: 'Reza Karimi', fa: 'رضا کریمی' },
+    notes: { en: 'Evaluating imaging models; T4 GPUs on trial.', fa: 'در حال ارزیابی مدل\u200cهای تصویربرداری؛ GPUهای T4 به\u200cصورت آزمایشی.' },
+  },
 ]
 // [vm, gpu index, profile, allocated GB, guest-used GB, util, running, owner]
 const vg: [string, number, string, number, number | null, number, boolean, string][] = [

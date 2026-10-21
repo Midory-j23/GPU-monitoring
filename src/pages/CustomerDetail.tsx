@@ -1,5 +1,6 @@
 import { Alert, Progress, Tag } from 'antd'
 import { ArrowLeft } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Status } from '@/api/types'
@@ -12,11 +13,28 @@ import { Button } from '@/components/ui/button'
 import { Card, CardTitle } from '@/components/ui/card'
 import { AlertList } from '@/pages/Alerts'
 import { useAlerts, useCustomers, useCustomerUsage, useGpus, useServers, useVgpus } from '@/hooks/queries'
-import { customerStats } from '@/lib/customers'
+import { customerStats, tr } from '@/lib/customers'
 import { useFmt } from '@/lib/format'
 import { useSettings } from '@/lib/settings'
 import { loadColor } from '@/lib/status'
 import { sum } from '@/lib/utils'
+
+/** Only http(s) links are made clickable (data may come from a backend). A bare domain gets https://; other schemes (javascript:, data:…) are refused. */
+export const safeHref = (u: string) => (/^https?:\/\//i.test(u) ? u : /^[a-z][a-z0-9+.-]*:/i.test(u) ? undefined : `https://${u}`)
+const PLAN_COLOR = { Standard: 'blue', Business: 'geekblue', Enterprise: 'purple', Trial: 'default' } as const
+
+function InfoRow({ k, children }: { k: string; children: ReactNode }) {
+  const { t } = useTranslation()
+  return <><dt className="text-muted-foreground">{t(k)}</dt><dd className="min-w-0 break-words">{children}</dd></>
+}
+function CopyButton({ text }: { text: string }) {
+  const { t } = useTranslation(), [done, setDone] = useState(false)
+  const copy = async () => {
+    if (!navigator.clipboard) return
+    try { await navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1500) } catch { /* clipboard blocked */ }
+  }
+  return <Button onClick={copy}>{done ? t('cdCopied') : t('cdCopy')}</Button>
+}
 
 interface Row { key: string; kind: 'ded' | 'vgt'; name: string; gpuId: string; host: string; gb: number; used: number | null; util: number | null; status: Status }
 
@@ -44,6 +62,7 @@ export default function CustomerDetail() {
           const pct = s.allocGb ? (s.usedGb / s.allocGb) * 100 : 0
           const dedGb = sum(s.gpus.map((g) => g.memTotalGb)), vgGb = sum(s.vgpus.map((v) => v.allocGb))
           const name = lang === 'fa' ? c.nameFa : c.name
+          const na = f.n(null), sep = lang === 'fa' ? '، ' : ', '
           // ── EDIT HERE: columns of this customer's resource table ──
           const cols: Col<Row>[] = [
             { key: 'type', header: 'type', cell: (r) => t(r.kind === 'ded' ? 'ded' : 'vgt'), sort: (r) => r.kind },
@@ -60,6 +79,38 @@ export default function CustomerDetail() {
                 <h1 className="text-2xl font-bold">{name}</h1><StatusBadge status={s.status} />
                 {s.util < 20 && <Tag color="warning">{t('underused')}</Tag>}
                 <span className="text-sm text-muted-foreground">{t('since')} <span className="ltr">{c.since}</span></span>
+              </div>
+              <div className="grid gap-4 lg:grid-cols-3">
+                <Card><CardTitle>{t('cdContact')}</CardTitle>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                    <InfoRow k="cdContactName">{tr(c.contactName, lang) || na}</InfoRow>
+                    <InfoRow k="cdPhone">{c.phone ? <a className="ltr" href={`tel:${c.phone.replace(/[^\d+]/g, '')}`}>{c.phone}</a> : na}</InfoRow>
+                    <InfoRow k="cdMobile">{c.mobile ? <a className="ltr" href={`tel:${c.mobile.replace(/[^\d+]/g, '')}`}>{c.mobile}</a> : na}</InfoRow>
+                    <InfoRow k="cdEmail">{/^[^\s@]+@[^\s@]+$/.test(c.email) ? <a className="ltr" href={`mailto:${c.email}`}>{c.email}</a> : c.email || na}</InfoRow>
+                    <InfoRow k="cdWebsite">{c.website && safeHref(c.website) ? <a className="ltr" href={safeHref(c.website)} target="_blank" rel="noopener noreferrer">{c.website.replace(/^https?:\/\//i, '')}</a> : c.website || na}</InfoRow>
+                  </dl>
+                </Card>
+                <Card><CardTitle>{t('cdAddress')}</CardTitle>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                    <InfoRow k="cdStreet">{tr(c.address.street, lang) || na}</InfoRow>
+                    <InfoRow k="cdCity">{tr(c.address.city, lang) || na}</InfoRow>
+                    <InfoRow k="cdProvince">{tr(c.address.province, lang) || na}</InfoRow>
+                    <InfoRow k="cdCountry">{tr(c.address.country, lang) || na}</InfoRow>
+                    <InfoRow k="cdPostal">{c.address.postalCode ? <span className="ltr">{c.address.postalCode}</span> : na}</InfoRow>
+                  </dl>
+                  <div className="mt-3"><CopyButton text={[tr(c.address.street, lang), [tr(c.address.city, lang), tr(c.address.province, lang)].filter(Boolean).join(sep), c.address.postalCode, tr(c.address.country, lang)].filter(Boolean).join(sep)} /></div>
+                </Card>
+                <Card><CardTitle>{t('cdAccount')}</CardTitle>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                    <InfoRow k="cdIndustry">{tr(c.industry, lang) || na}</InfoRow>
+                    <InfoRow k="cdPlan"><Tag color={PLAN_COLOR[c.plan] ?? 'default'} style={{ margin: 0 }}>{t('plan_' + c.plan)}</Tag></InfoRow>
+                    <InfoRow k="cdContractEnd">{c.contractEnd ? <span className="ltr">{c.contractEnd}</span> : na}</InfoRow>
+                    <InfoRow k="cdManager">{tr(c.accountManager, lang) || na}</InfoRow>
+                    <InfoRow k="cdRegNo">{c.registrationNo ? <span className="ltr">{c.registrationNo}</span> : na}</InfoRow>
+                    <InfoRow k="cdTaxId">{c.taxId ? <span className="ltr">{c.taxId}</span> : na}</InfoRow>
+                  </dl>
+                  {c.notes && tr(c.notes, lang) && <p className="mt-3 text-sm text-muted-foreground"><b className="text-foreground">{t('cdNotes')}: </b>{tr(c.notes, lang)}</p>}
+                </Card>
               </div>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
                 <MetricCard label={t('dedGpu')} value={f.n(s.gpus.length, 0)} />
