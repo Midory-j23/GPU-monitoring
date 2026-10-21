@@ -1,39 +1,233 @@
 /* Login form layout adapted from "Login V1" by Colorlib (free for personal and commercial use),
    recoloured with the project's CSS variables (index.css) and converted to logical properties so it mirrors in RTL. */
-.lg-card { width: min(960px, 100%); display: flex; align-items: center; justify-content: center; gap: 56px; padding: 48px 56px; border-radius: 24px;
-  background: hsl(var(--card) / .84); border: 1px solid hsl(var(--foreground) / .14); box-shadow: 0 20px 60px rgb(0 0 0 / .45);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
-.lg-pic { display: none; flex: 0 0 316px; max-width: 316px; }
-@media (min-width: 992px) { .lg-pic { display: block; } }
-.lg-tilt { transition: transform .3s cubic-bezier(.03, .98, .52, .99); will-change: transform; }
-.lg-form { width: 100%; max-width: 340px; }
-.lg-title { margin-bottom: 28px; text-align: center; font-size: 24px; font-weight: 700; line-height: 1.35; color: hsl(var(--foreground)); }
+/* Perf: no backdrop-filter on the card — blurring a backdrop re-rasterizes it every frame
+   on weak GPUs. Near-opaque card + static top sheen instead, same strategy as .glass-bar. */
+.lg-card {
+  width: min(960px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  padding: 48px 56px;
+  border-radius: 24px;
+  background-color: hsl(var(--card) / 0.9);
+  background-image: linear-gradient(
+    180deg,
+    hsl(var(--foreground) / 0.05),
+    transparent 130px
+  );
+  border: 1px solid hsl(var(--foreground) / 0.14);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.45);
+}
+.lg-pic {
+  display: none;
+  flex: 0 0 316px;
+  max-width: 316px;
+}
+@media (min-width: 992px) {
+  .lg-pic {
+    display: block;
+  }
+}
+.lg-tilt {
+  transition: transform 0.3s cubic-bezier(0.03, 0.98, 0.52, 0.99);
+  will-change: transform;
+}
+.lg-form {
+  width: 100%;
+  max-width: 340px;
+}
+.lg-title {
+  margin-bottom: 28px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: hsl(var(--foreground));
+}
 
-.lg-field { position: relative; margin-bottom: 12px; }
-.lg-input { width: 100%; height: 50px; border: 0; outline: 0; border-radius: 25px; padding-inline: 62px 44px; font: inherit; font-size: 15px;
-  color: hsl(var(--foreground)); background: hsl(var(--foreground) / .09); transition: background .3s; }
-.lg-input::placeholder { color: hsl(var(--muted-foreground)); }
-.lg-input:focus { background: hsl(var(--foreground) / .13); }
-.lg-focus { position: absolute; inset: 0; border-radius: 25px; pointer-events: none; opacity: 0; transition: opacity .3s;
-  box-shadow: 0 0 0 2px hsl(var(--primary)), 0 0 20px hsl(var(--primary) / .35); }
-.lg-input:focus + .lg-focus { opacity: 1; }
-.lg-icon { position: absolute; inset-block: 0; inset-inline-start: 0; width: 56px; display: flex; align-items: center; justify-content: center;
-  color: hsl(var(--muted-foreground)); pointer-events: none; transition: color .3s; }
-.lg-input:focus ~ .lg-icon { color: hsl(var(--primary)); }
-.lg-eye { position: absolute; inset-block: 0; inset-inline-end: 8px; width: 34px; display: flex; align-items: center; justify-content: center; color: hsl(var(--muted-foreground)); }
-.lg-eye:hover { color: hsl(var(--foreground)); }
+.lg-field {
+  position: relative;
+  margin-bottom: 12px;
+}
+.lg-input {
+  width: 100%;
+  height: 50px;
+  border: 0;
+  outline: 0;
+  border-radius: 25px;
+  padding-inline: 62px 44px;
+  font: inherit;
+  font-size: 15px;
+  color: hsl(var(--foreground));
+  background: hsl(var(--foreground) / 0.09);
+  transition: background 0.3s;
+}
+.lg-input::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+.lg-input:focus {
+  background: hsl(var(--foreground) / 0.13);
+}
+.lg-focus {
+  position: absolute;
+  inset: 0;
+  border-radius: 25px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  box-shadow:
+    0 0 0 2px hsl(var(--primary)),
+    0 0 20px hsl(var(--primary) / 0.35);
+}
+.lg-input:focus + .lg-focus {
+  opacity: 1;
+}
+.lg-icon {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
+  transition: color 0.3s;
+}
+.lg-input:focus ~ .lg-icon {
+  color: hsl(var(--primary));
+}
+.lg-eye {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 8px;
+  width: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsl(var(--muted-foreground));
+}
+.lg-eye:hover {
+  color: hsl(var(--foreground));
+}
 
 /* validation bubble (shown from the data-validate attribute, like the original design) */
-.lg-field[data-invalid]::before { content: attr(data-validate); position: absolute; z-index: 2; top: 50%; transform: translateY(-50%); inset-inline-end: 8px; max-width: 72%;
-  padding: 4px 12px; border-radius: 13px; font-size: 13px; line-height: 1.4; pointer-events: none;
-  color: hsl(var(--crit)); background: hsl(var(--card)); border: 1px solid hsl(var(--crit)); }
+.lg-field[data-invalid]::before {
+  content: attr(data-validate);
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  transform: translateY(-50%);
+  inset-inline-end: 8px;
+  max-width: 72%;
+  padding: 4px 12px;
+  border-radius: 13px;
+  font-size: 13px;
+  line-height: 1.4;
+  pointer-events: none;
+  color: hsl(var(--crit));
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--crit));
+}
 
-.lg-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; margin-top: 18px; border: 0; border-radius: 25px;
-  font: inherit; font-size: 15px; font-weight: 700; color: hsl(var(--primary-foreground)); background: hsl(var(--primary)); transition: filter .3s, box-shadow .3s; }
-.lg-btn:hover:not(:disabled) { filter: brightness(1.1); box-shadow: 0 8px 24px hsl(var(--primary) / .35); }
-.lg-btn:disabled { opacity: .65; cursor: wait; }
-.lg-error { margin-top: 12px; padding: 8px 14px; border-radius: 14px; text-align: center; font-size: 13px;
-  color: hsl(var(--crit)); background: hsl(var(--crit) / .12); border: 1px solid hsl(var(--crit) / .4); }
-.lg-foot { margin-top: 22px; text-align: center; font-size: 13px; color: hsl(var(--muted-foreground)); }
-.lg-chip { margin: 4px 3px 0; padding: 3px 12px; border-radius: 999px; font-size: 12px; color: hsl(var(--muted-foreground)); border: 1px solid hsl(var(--border)); }
-.lg-chip:hover { color: hsl(var(--foreground)); border-color: hsl(var(--primary)); }
+.lg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 50px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 25px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: hsl(var(--primary-foreground));
+  background: hsl(var(--primary));
+  transition:
+    filter 0.3s,
+    box-shadow 0.3s;
+}
+.lg-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 8px 24px hsl(var(--primary) / 0.35);
+}
+.lg-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.lg-error {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: hsl(var(--crit));
+  background: hsl(var(--crit) / 0.12);
+  border: 1px solid hsl(var(--crit) / 0.4);
+}
+.lg-foot {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 13px;
+  color: hsl(var(--muted-foreground));
+}
+.lg-chip {
+  margin: 4px 3px 0;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+}
+.lg-chip:hover {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--primary));
+}
+
+/* ---------- Minimal aurora background (static — zero per-frame cost) ---------- */
+
+.lg-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    /* film grain (SVG tile, dimmed inside the SVG itself) */
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='160'%20height='160'%20viewBox='0%200%20160%20160'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.8'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='160'%20height='160'%20filter='url(%23n)'%20opacity='0.04'/%3E%3C/svg%3E")
+      0 0 / 160px 160px repeat,
+    /* faint dot grid */
+    radial-gradient(rgba(148, 197, 255, 0.07) 1px, transparent 1.4px) 0 0 / 30px
+      30px repeat,
+    /* darkened edges to focus the eye */
+    radial-gradient(
+        120% 95% at 50% 45%,
+        transparent 52%,
+        rgba(2, 6, 16, 0.6) 100%
+      ),
+    /* aurora glows — hues echo the app's identity blobs (cyan / violet / green) */
+    radial-gradient(
+        ellipse 42% 38% at 16% 4%,
+        rgba(76, 184, 224, 0.16),
+        transparent
+      ),
+    radial-gradient(
+      ellipse 38% 34% at 86% 8%,
+      rgba(139, 124, 240, 0.13),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 44% 40% at 55% 102%,
+      rgba(60, 207, 142, 0.1),
+      transparent
+    ),
+    /* soft spotlight behind the card */
+    radial-gradient(
+        46% 40% at 50% 44%,
+        rgba(76, 184, 224, 0.07),
+        transparent 70%
+      ),
+    /* deep-navy base with vertical depth */
+    linear-gradient(180deg, #081226 0%, #050b1a 52%, #03070f 100%);
+}
