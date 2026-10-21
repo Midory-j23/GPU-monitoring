@@ -69,7 +69,7 @@ describe('authentication', () => {
   })
   test('login page works in Persian RTL', async () => {
     sessionStorage.clear(); localStorage.setItem('lang', 'fa'); mount('/login')
-    expect(await screen.findByRole('heading', { level: 1, name: 'ورود به پایشگر GPU' })).toBeTruthy()
+    expect(await screen.findByRole('heading', { level: 1, name: 'ورود به مانیتورینگ GPU پدیسار' })).toBeTruthy()
     expect(document.documentElement.dir).toBe('rtl')
   })
   test('viewer cannot acknowledge, sign out returns to login', async () => {
@@ -232,5 +232,36 @@ describe('login form design', () => {
     expect(await screen.findByText('گذرواژه را فراموش کرده‌اید؟ با مدیر سیستم تماس بگیرید.')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: /^viewer/ }))
     expect((screen.getByLabelText('نام کاربری') as HTMLInputElement).value).toBe('viewer')
+  })
+})
+
+describe('login brand + GSAP', () => {
+  const realMM = window.matchMedia
+  const motion = (allowed: boolean) => { window.matchMedia = ((q: string) => ({ matches: allowed && q.includes('no-preference'), media: q, onchange: null, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent: () => false })) as typeof window.matchMedia }
+  afterEach(() => { window.matchMedia = realMM })
+
+  test('brand lockup is split into words (Persian letters stay joined) and re-renders on language switch', async () => {
+    sessionStorage.clear(); mount('/login'); await screen.findByLabelText('Username')
+    expect([...document.querySelectorAll('.lg-brand-word')].map((w) => w.textContent)).toEqual(['GPU', 'Monitor'])
+    fireEvent.click(screen.getByRole('button', { name: /فارسی/ }))
+    await waitFor(() => expect([...document.querySelectorAll('.lg-brand-word')].map((w) => w.textContent)).toEqual(['مانیتورینگ', 'GPU', 'پدیسار']))
+  })
+  test('with motion allowed GSAP animates the brand, then clears its inline styles (releases GPU layers)', async () => {
+    motion(true); sessionStorage.clear(); mount('/login'); await screen.findByLabelText('Username')
+    const word = document.querySelector('.lg-brand-word') as HTMLElement
+    expect(word.getAttribute('style') ?? '').toMatch(/transform/)                       // animation started
+    await waitFor(() => expect(word.getAttribute('style') ?? '').not.toMatch(/transform/), { timeout: 5000 }) // and cleaned up
+  })
+  test('with reduced motion nothing is animated', async () => {
+    motion(false); sessionStorage.clear(); mount('/login'); await screen.findByLabelText('Username')
+    expect(document.querySelector('.lg-brand-word')!.getAttribute('style')).toBeNull()
+    expect(document.querySelector('.lg-pulse')!.getAttribute('style')).not.toMatch(/dashoffset/i)
+  })
+  test('laptop shows a monitoring pulse line instead of the user icon', async () => {
+    sessionStorage.clear(); mount('/login'); await screen.findByLabelText('Username')
+    const svg = document.querySelector('.lg-pic svg')!
+    expect(svg.querySelector('.lg-pulse')).toBeTruthy()
+    expect(svg.querySelector('circle[r="13"]')).toBeNull()          // old user head
+    expect(svg.innerHTML).not.toContain('M131 174')                  // old user shoulders
   })
 })

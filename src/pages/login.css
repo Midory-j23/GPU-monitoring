@@ -30,7 +30,7 @@
   }
 }
 .lg-tilt {
-  transition: transform 0.3s cubic-bezier(0.03, 0.98, 0.52, 0.99);
+  /* no CSS transition here: GSAP (quickTo) eases the tilt */
   will-change: transform;
 }
 .lg-form {
@@ -230,4 +230,58 @@
       ),
     /* deep-navy base with vertical depth */
     linear-gradient(180deg, #081226 0%, #050b1a 52%, #03070f 100%);
+}
+
+/* ---------- Brand lockup (animated with GSAP in LoginBrand.tsx) ---------- */
+.lg-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.lg-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.15);
+  border: 1px solid hsl(var(--primary) / 0.35);
+}
+.lg-brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.lg-brand-name {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.3em;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: hsl(var(--foreground));
+}
+.lg-brand-mask {
+  display: inline-block;
+  overflow: hidden;
+  padding-block: 0.12em;
+}
+.lg-brand-word {
+  display: inline-block;
+}
+.lg-brand-bar {
+  display: block;
+  width: 46px;
+  height: 3px;
+  margin-top: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--ok)));
+  transform-origin: left center;
+}
+[dir='rtl'] .lg-brand-bar {
+  transform-origin: right center;
 }

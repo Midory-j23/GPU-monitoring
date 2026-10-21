@@ -2,6 +2,7 @@ import { Eye, EyeOff, Languages, Lock, LogIn, User } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { LoginBrand } from '@/components/LoginBrand'
 import { LoginIllustration } from '@/components/LoginIllustration'
 import { Button } from '@/components/ui/button'
 import { DEMO_USERS } from '@/api/mock'
@@ -31,11 +32,10 @@ export default function Login() {
     <div className="dark relative flex min-h-screen items-center justify-center bg-[#050b1a] p-4 text-foreground">
       {/* Decorative background — one static element, zero per-frame GPU work. */}
       <div className="lg-bg" aria-hidden="true" />
-      <Button className="absolute end-4 top-4" onClick={() => s.setLang(s.lang === 'en' ? 'fa' : 'en')}><Languages size={16} />{t('lang')}</Button>
       <div className="lg-card relative">
         <div className="lg-pic"><LoginIllustration /></div>
         <form className="lg-form" onSubmit={submit} noValidate aria-labelledby="login-title">
-          <h1 id="login-title" className="lg-title">{t('loginTitle')}</h1>
+          <LoginBrand />
           <div className="lg-field" data-invalid={bad.u || undefined} data-validate={t('usernameRequired')}>
             <input className="lg-input" name="username" aria-label={t('username')} placeholder={t('username')} autoComplete="username" autoFocus value={u}
               onChange={(e) => setU(e.target.value)} onFocus={() => setBad((b) => ({ ...b, u: false }))} />
@@ -53,7 +53,6 @@ export default function Login() {
             <div>{t('forgotHint')}</div>
             {MOCK && (
               <div style={{ marginTop: 14 }}>
-                <div>{t('demoHint')}</div>
                 {Object.entries(DEMO_USERS).map(([name, [pw]]) => (
                   <button key={name} type="button" className="lg-chip" onClick={() => { setU(name); setP(pw); setBad({ u: false, p: false }) }}>{name} · {t('role_' + name)}</button>
                 ))}

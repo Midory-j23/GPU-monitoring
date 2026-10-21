@@ -16,13 +16,14 @@ index.html → src/main.tsx → Providers.tsx → App.tsx (routes) → Layout.ts
 
 ## 2. Pages (URL → file → sections)
 
-### Login — `/login` → `pages/Login.tsx` (+ `pages/login.css`, `components/LoginIllustration.tsx`)
+### Login — `/login` → `pages/Login.tsx` (+ `pages/login.css`, `components/LoginBrand.tsx`, `components/LoginIllustration.tsx`)
 Based on the "Login V1" design you supplied (two-column card: artwork + pill-shaped fields), recoloured with the project's colours.
 | Part | Where |
 |---|---|
 | Background photo (`public/padisar-bg.png`) | `style` of the root div in `Login.tsx` |
 | Card, fields, button, bubbles, error box (all colours = project CSS variables) | `login.css` (classes start with `lg-`) |
-| Artwork (laptop + user icon, tilts toward the pointer) | `components/LoginIllustration.tsx` (SVG, uses `--primary`, `--ok`, `--muted`) |
+| Brand lockup above the title (icon + brand name + accent bar), animated once with GSAP | `components/LoginBrand.tsx`; text = `brand` in the locale files; styles `.lg-brand*` at the end of `login.css` |
+| Artwork (laptop with a monitoring pulse line; pulse draws in once, laptop tilts toward the pointer — both GSAP) | `components/LoginIllustration.tsx` (SVG, uses `--primary`, `--ok`, `--muted`); the chart is the `.lg-pulse` path |
 | Validation bubbles ("Username is required") | `data-validate` attributes + `bad` state in `Login.tsx`; texts `usernameRequired` / `passwordRequired` in the locale files |
 | Wrong-password message | `loginError` |
 | Demo accounts (mock mode only) | chips at the bottom, from `DEMO_USERS` in `api/mock.ts` |
@@ -170,3 +171,11 @@ The values live in `lib/settings.tsx` (**refreshSec**, **animBg**).
 - **Speed:** no `backdrop-filter` on scrolling surfaces (`.glass-bar` is near-opaque instead). The background animation pauses while scrolling (`components/Backdrop.tsx`). Judge speed with `npm run build && npm run preview`, not `npm run dev` (dev mode is much slower).
 - **Menu button:** hidden on desktop by a wrapper `<span className="md:hidden">` in `Layout.tsx`; a display rule on the Ant Design button itself would override the hiding.
 - **Hover / dropdown / tooltip colours:** set in `Providers.tsx` (`colorBgElevated`, `colorBgSpotlight`, `colorBgTextHover`, and the Table/Menu/Select hover tokens). Ant Design's defaults are near-black.
+
+## GSAP animation rules (keep the login page smooth)
+- GSAP (`gsap` package, own chunk in `vite.config.ts`) is used only on the login page: `LoginBrand.tsx` and `LoginIllustration.tsx`.
+- Animate **transform and opacity only** (`x/y/scale/rotation/yPercent/scaleX`, SVG `strokeDashoffset`) — never width/height/top/left/blur/box-shadow.
+- Run animations **once** (no endless loops); the brand clears its inline styles when finished so no GPU layers stay promoted.
+- Everything is wrapped in `gsap.matchMedia('(prefers-reduced-motion: no-preference)')`, so users who prefer reduced motion get a static page.
+- Brand text is split by **words**, never letters, so Persian letters stay joined.
+- Pointer tilt uses `gsap.quickTo` (one reusable tween per property) and caches the element rectangle on pointer-enter.
